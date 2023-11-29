@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "BusinessLogic";
+
+package auth;
+
+service Auth {
+  rpc Login (LoginRequest) returns (LoginReply);
+}
+
+message LoginRequest {
+  string number = 1;
+  string password = 2;
+}
+
+message LoginReply {
+	string clientName = 1;
+	string clientNumber = 2;
+	string urgentAccount = 3;
+	string demandAccount = 4;
+	string cardAccount = 5;
+}
