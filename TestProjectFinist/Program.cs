@@ -1,4 +1,11 @@
 using Grpc.Net.Client;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace Server
 {
@@ -20,6 +27,27 @@ namespace Server
                 GrpcChannel channel = GrpcChannel.ForAddress("https://localhost:7097");
                 return new Auth.AuthClient(channel);
             });
+            builder.Services.AddScoped<UserInfo.UserInfoClient, UserInfo.UserInfoClient>(serviceProvider =>
+            {
+                GrpcChannel channel = GrpcChannel.ForAddress("https://localhost:7097");
+                return new UserInfo.UserInfoClient(channel);
+            });
+
+            builder.Services.AddAuthorization();
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = "MyAuthServer",
+                        ValidateAudience = true,
+                        ValidAudience = "MyAuthClient",
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication")),
+                        ValidateIssuerSigningKey = true,
+                    };
+                });
 
             var app = builder.Build();
 
@@ -32,6 +60,7 @@ namespace Server
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

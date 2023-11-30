@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "BusinessLogic";
+
+package userinfo;
+
+service UserInfo {
+  rpc GetUserInfo (UserInfoRequest) returns (UserInfoReply);
+}
+
+message UserInfoRequest {
+  string number = 1;
+}
+
+message UserInfoReply {
+	string clientName = 1;
+	string clientNumber = 2;
+	string urgentAccount = 3;
+	string demandAccount = 4;
+	string cardAccount = 5;
+}

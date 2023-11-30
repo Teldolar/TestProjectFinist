@@ -1,8 +1,5 @@
 using Grpc.Core;
-using BusinessLogic;
-using Microsoft.AspNetCore.Mvc;
 using DB;
-using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic.Services
 {
@@ -18,22 +15,10 @@ namespace BusinessLogic.Services
         {
             return Task.Run(() =>
             {
-                DB.Entities.Client client = _finistDBContext.Clients.FirstOrDefault(p=>p.Number == request.Number && p.Password == request.Password) ?? new DB.Entities.Client()
-                {
-                    Name = "",
-                    Number = "",
-                    UrgentAccount = "",
-                    DemandAccount = "",
-                    CardAccount = ""
-                };
-                Console.WriteLine(client.Name);
+                bool isExist = _finistDBContext.Clients.Any(p=>p.Number == request.Number && p.Password == request.Password);
                 return new LoginReply
                 {
-                    ClientName = client.Name,
-                    ClientNumber = client.Number,
-                    UrgentAccount = client.UrgentAccount,
-                    DemandAccount = client.DemandAccount,
-                    CardAccount = client.CardAccount
+                    IsExist= isExist,
                 };
             });
         }
